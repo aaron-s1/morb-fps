@@ -4,11 +4,18 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Tile
   - Wall
-  - NumberMissile
-  - TheMorb
-  - Enemy
+  - Metal
+  - Blood
+  - Dirt
+  - Concrete
+  - ExplosiveBarrel
+  - Target
+  - GasTank
+  - Metal (Static)
+  - Wood (Static)
+  - Dirt (Static)
+  - Wood
   layers:
   - Default
   - TransparentFX
@@ -16,16 +23,16 @@ TagManager:
   - 
   - Water
   - UI
-  - floor
-  - number missile
-  - the morb
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Wall
+  - First Person View
+  - Character
+  - Post Processing
+  - Post Processing Weapon
+  - Post Processing Scope
+  - Invisible Wall
+  - Projectile
   - 
   - 
   - 

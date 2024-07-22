@@ -62,6 +62,7 @@ public class EnemyFiresBullet : MonoBehaviour, IEnemyAttack
 
     void CreateNewBulletPool()
     {
+        Debug.Log("ranged enemy attacked");
         bulletPool = new List<GameObject>();
 
         for (int i = 0; i < bulletPoolSize; i++)

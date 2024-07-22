@@ -56,8 +56,6 @@ public class SearchForPlayer : MonoBehaviour
             {
                 if (Physics.Linecast(transform.position, playerPos.position))
                     SendMessage("BeginAttack", playerPos);
-                // if (Physics.Linecast(transform.position, playerPos.position))
-                //     SendMessage("BeginAttack", playerPos, playerPosOffset);
             }
         }
     }

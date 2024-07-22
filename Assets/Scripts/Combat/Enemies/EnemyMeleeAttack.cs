@@ -13,7 +13,7 @@ public class EnemyMeleeAttack : MonoBehaviour, IEnemyAttack
 
 
     public void PrepareAttack() =>
-        throw new System.NotImplementedException();
+        Debug.Log("melee enemy attacked");
 
 
     public IEnumerator BeginAttack(Transform playerPos) =>

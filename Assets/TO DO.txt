@@ -9,7 +9,7 @@ General Ideas:
 
 Player Design
 - Tighten up controller
-- Determine better way to handle health, and how to die
+- Determine better way to handle health, and die conditions
 
 
 
@@ -33,15 +33,18 @@ Enemies
 - More humanoid enemy variety
 - Boss: Armond White, King of Contrarians
     ~ Ability: Fast-moving number traps on ground that travel towards play and must be dodged.
-    ~ more abilities
+    ~ Ability: Number sword
 - Weapons
     ~ Sword in the shape of a number
     
 
 
-Props / Lighting
-- Moody lighting
-- Props to limit pathing
+Lighting
+- Moody
+
+
+Pathing
+- Some should props  limit pathing (ala first part of Doom 2016)
 
 
 Doom Map Ideas
@@ -49,12 +52,12 @@ Doom Map Ideas
 
 
 General Song Reference Ideas
-- The Only Thing They Fear is Morb
-- Of All the Lives We've Morbed (No Tomorrow - Serj Tankian)
+- The only thing they fear is Morb
+- For with all the lives you’ve ever Morbed
 
 
 UI
-- Retractable UI?
+- UI retracts upon certain conditions (e.g. cutscenes)?
 
 
 Camera
@@ -66,7 +69,7 @@ Misc.
 - Respawning, respawn points
 
 
-Bugs
+Bug Fixing
 - 
 
 
