@@ -1,0 +1,30 @@
+
+~ Overarching scripts for handling data between modes
+
+DOOM
+    - What weapons to use?
+    - UI
+    - and Chainsaw
+    - And Grappling Hook
+
+HELLSINGER
+    - What weapons to use?
+    - UI
+    - Clean up chevrons
+    - Match chevrons to beat
+    - Match chevron glowing effect accordingly
+    - Beat matching gives bonuses
+
+DUSK
+    - What weapons to use?
+    - UI
+
+ALL
+    - Transition effects, special abilities between modes
+
+
+ENEMIES
+    - Swap models out
+
+
+Handle transitions between modes
