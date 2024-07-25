@@ -2,6 +2,8 @@
 
 using UnityEngine;
 
+using UnityEngine.InputSystem;
+
 namespace InfimaGames.LowPolyShooterPack
 {
     /// <summary>
@@ -160,6 +162,21 @@ namespace InfimaGames.LowPolyShooterPack
             //Max Out Ammo.
             ammunitionCurrent = magazineBehaviour.GetAmmunitionTotal();
         }
+        
+
+        // protected override void DeleteAllAmmunition()
+        // {
+        //     // currentWeapon./
+        // }
+
+        // void Update()
+        // {
+            // base.Update();
+            // if (Keyboard.current.mKey.wasPressedThisFrame);
+                // equippedWeapon.Reload();
+                // Reload();
+        // }
+
 
         #endregion
 
@@ -180,6 +197,7 @@ namespace InfimaGames.LowPolyShooterPack
         public override AudioClip GetAudioClipFire() => muzzleBehaviour.GetAudioClipFire();
         
         public override int GetAmmunitionCurrent() => ammunitionCurrent;
+        // public override void DeleteAllAmmunition() => ammunitionCurrent = 0;
 
         public override int GetAmmunitionTotal() => magazineBehaviour.GetAmmunitionTotal();
 
@@ -198,7 +216,19 @@ namespace InfimaGames.LowPolyShooterPack
 
         public override void Reload()
         {
-            //Play Reload Animation.
+            // UnityEngine.Debug.Log("All keys available: " + Keyboard.current.allKeys);
+            
+            // Debug.LogError("Current key = " + Keyboard.current);
+            
+            // if (Keyboard.current.mKey.wasPressedThisFrame)
+                // Debug.Log("a key was pressed and should reload.");
+
+            // base.Update();
+            // if (Keyboard.current.oKey.wasPressedThisFrame);
+                // equippedWeapon.Reload();
+            
+        //     //Play Reload Animation.
+        //     // Debug.Log("reloaded??");
             animator.Play(HasAmmunition() ? "Reload" : "Reload Empty", 0, 0.0f);
         }
         public override void Fire(float spreadMultiplier = 1.0f)

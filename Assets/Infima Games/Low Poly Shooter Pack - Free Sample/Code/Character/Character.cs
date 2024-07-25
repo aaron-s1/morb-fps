@@ -216,6 +216,11 @@ namespace InfimaGames.LowPolyShooterPack
 				}	
 			}
 
+			else if (Keyboard.current.oKey.wasPressedThisFrame)
+				OnTryPlayReloadForced();
+				// PlayReloadAnimation();
+			
+
 			//Update Animator.
 			UpdateAnimator();
 		}
@@ -613,6 +618,7 @@ namespace InfimaGames.LowPolyShooterPack
 			//Block.
 			if (!CanPlayAnimationReload())
 				return;
+
 			
 			//Switch.
 			switch (context)
@@ -623,6 +629,14 @@ namespace InfimaGames.LowPolyShooterPack
 					PlayReloadAnimation();
 					break;
 			}
+		}
+
+		public void OnTryPlayReloadForced()
+		{
+			if (!cursorLocked || !CanPlayAnimationReload())
+				return;
+			
+			PlayReloadAnimation();			
 		}
 
 		/// <summary>
