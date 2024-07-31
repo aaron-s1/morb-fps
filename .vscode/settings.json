@@ -52,5 +52,28 @@
         "temp/":true,
         "Temp/":true
     },
-    "editor.bracketPairColorization.enabled": false
+    "editor.bracketPairColorization.enabled": false,
+
+        "editor.tokenColorCustomizations": {
+          "textMateRules": [
+            {
+              "scope": "entity.name.type.class",
+              "settings": {
+                "foreground": "#4EC9B0" // Class names
+              }
+            },
+            {
+              "scope": "entity.name.type",
+              "settings": {
+                "foreground": "#4EC9B0" // Types
+              }
+            },
+            {
+              "scope": "entity.name.function",
+              "settings": {
+                "foreground": "#DCDCAA" // Function names
+              }
+            }
+          ]
+        }
 }

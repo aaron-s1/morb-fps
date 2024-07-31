@@ -5,6 +5,8 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
 
+using InfimaGames.LowPolyShooterPack.Interface;
+
 namespace InfimaGames.LowPolyShooterPack
 {
 	/// <summary>
@@ -195,13 +197,88 @@ namespace InfimaGames.LowPolyShooterPack
 			layerActions = characterAnimator.GetLayerIndex("Layer Actions");
 			//Cache a reference to the overlay layer's index.
 			layerOverlay = characterAnimator.GetLayerIndex("Layer Overlay");
+
+			StartCoroutine(BeatMatch__TestingRepeating());
 		}
+
+		float beatLength;
+		float beatMatchReloadMultiplier = 1f;
+
+		
+		
+	public Animator beatChevronsAnim;
+	bool beatMatchIsRunning;
+
+
+    IEnumerator BeatMatch__TestingRepeating()
+    {
+        beatMatchIsRunning = true;
+
+        if (beatLength == 0)
+        {
+            yield return new WaitForSeconds(0.5f); // Small delay to ensure Animator is initialized
+
+            // Wait until the Animator starts playing a state
+            while (!beatChevronsAnim.isInitialized)
+            {
+                Debug.Log("Waiting for Animator to initialize...");
+                yield return null;
+            }
+
+            // Fetch the current state information
+            AnimatorStateInfo stateInfo = beatChevronsAnim.GetCurrentAnimatorStateInfo(0);
+            // Debug.Log($"Current State: {stateInfo.fullPathHash}, Expected State Hash: {Animator.StringToHash("Base Layer.Chevrons Come In")}");
+
+            // Wait until the Animator is playing the expected state
+            while (!stateInfo.IsName("Base Layer.Chevrons Come In"))
+            {
+                // Debug.Log("Waiting for Animator to play 'Base Layer.Chevrons Come In' state...");
+                yield return null; // Wait for the next frame
+                stateInfo = beatChevronsAnim.GetCurrentAnimatorStateInfo(0);
+            }
+
+            beatLength = stateInfo.length;
+        }
+
+        // Start timer and process beat match
+        float timeElapsed = 0;
+
+
+		
+        while (timeElapsed < beatLength)
+        {
+            if (Mouse.current.leftButton.wasPressedThisFrame && !equippedWeapon.HasAmmunition())
+            {
+                if (timeElapsed >= (beatLength * 0.85f))
+                    beatMatchReloadMultiplier = 2f;
+                else if (timeElapsed >= (beatLength * 0.6f))
+                    beatMatchReloadMultiplier = 1.5f;
+                else
+                    beatMatchReloadMultiplier = 1;
+
+				// Forcefully end while loop's execution.
+				timeElapsed += 2f;
+
+				Debug.Log("beatMatchReloadMultiplier = " + beatMatchReloadMultiplier);
+				OnTryPlayReloadForced(beatMatchReloadMultiplier);
+            }
+
+            yield return null;
+            timeElapsed += Time.deltaTime;
+        }
+
+
+        beatMatchIsRunning = false;
+
+		// Small buffer before starting next beat in case reload occurred
+		yield return new WaitForSeconds(0.1f);
+        StartCoroutine(BeatMatch__TestingRepeating());
+    }
+
 
 		protected override void Update()
 		{
-			//Match Aim.
 			aiming = holdingButtonAim && CanAim();
-			//Match Run.
 			running = holdingButtonRun && CanRun();
 
 			//Holding the firing button.
@@ -216,8 +293,8 @@ namespace InfimaGames.LowPolyShooterPack
 				}	
 			}
 
-			else if (Keyboard.current.oKey.wasPressedThisFrame)
-				OnTryPlayReloadForced();
+			// else if (Keyboard.current.oKey.wasPressedThisFrame)			
+				// OnTryPlayReloadForced(beatMatchReloadMultiplier);
 				// PlayReloadAnimation();
 			
 
@@ -312,21 +389,22 @@ namespace InfimaGames.LowPolyShooterPack
 			characterAnimator.CrossFade(stateName, 0.05f, layerOverlay, 0);
 		}
 
-		private void PlayReloadAnimation()
+
+		private void PlayReloadAnimation(float multiplier = 1f)
 		{
 			#region Animation
 
 			//Get the name of the animation state to play, which depends on weapon settings, and ammunition!
 			string stateName = equippedWeapon.HasAmmunition() ? "Reload" : "Reload Empty";
-			//Play the animation state!
-			characterAnimator.Play(stateName, layerActions, 0.0f);
+			
+			// Set reload speed according to how well Hellsinger's beat was matched.
+			characterAnimator.SetFloat("ReloadSpeedMultiplier", multiplier);
 
-			//Set.
+			characterAnimator.Play(stateName, layerActions, 0.0f);
 			reloading = true;
 
 			#endregion
 
-			//Reload.
 			equippedWeapon.Reload();
 		}
 
@@ -631,12 +709,12 @@ namespace InfimaGames.LowPolyShooterPack
 			}
 		}
 
-		public void OnTryPlayReloadForced()
+		public void OnTryPlayReloadForced(float beatMatchReloadMultiplier = 1f)
 		{
 			if (!cursorLocked || !CanPlayAnimationReload())
 				return;
 			
-			PlayReloadAnimation();			
+			PlayReloadAnimation(beatMatchReloadMultiplier);			
 		}
 
 		/// <summary>

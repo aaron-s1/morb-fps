@@ -491,17 +491,6 @@
                     "action": "Tutorial",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c6e65533-23fd-401d-9939-20bb6b60fd37",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Reload",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         }

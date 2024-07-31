@@ -1,4 +1,4 @@
-﻿// Copyright 2021, Infima Games. All Rights Reserved.
+﻿    // Copyright 2021, Infima Games. All Rights Reserved.
 
 using UnityEngine;
 
@@ -14,8 +14,8 @@ namespace InfimaGames.LowPolyShooterPack.Interface
         [Header("Settings")]
         
         [Tooltip("Canvas prefab spawned at start. Displays the player's user interface.")]
-        [SerializeField]
-        private GameObject canvasPrefab;
+        // [SerializeField]
+        public GameObject canvasPrefab;
 
         #endregion
 

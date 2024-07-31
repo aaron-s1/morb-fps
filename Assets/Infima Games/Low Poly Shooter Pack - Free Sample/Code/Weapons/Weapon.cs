@@ -27,6 +27,9 @@ namespace InfimaGames.LowPolyShooterPack
         [SerializeField] 
         private int roundsPerMinutes = 200;
 
+        [SerializeField]
+        public int damage = 0;
+
         [Tooltip("Mask of things recognized when firing.")]
         [SerializeField]
         private LayerMask mask;
@@ -228,7 +231,7 @@ namespace InfimaGames.LowPolyShooterPack
                 // equippedWeapon.Reload();
             
         //     //Play Reload Animation.
-        //     // Debug.Log("reloaded??");
+        //     // Debug.Log("reloaded??");            )
             animator.Play(HasAmmunition() ? "Reload" : "Reload Empty", 0, 0.0f);
         }
         public override void Fire(float spreadMultiplier = 1.0f)
