@@ -62,6 +62,17 @@ namespace InfimaGames.LowPolyShooterPack
 		/// True if the character has its weapon holstered.
 		/// </summary>
 		private bool holstered;
+
+		private bool jumping;
+
+		public float jumpForce = 1f;
+		public float gravityMultiplier = 1f;
+ 		public float fallMultiplier = 1f;
+		public float jumpDamping = 1.5f; // Damping factor to control the jump acceleration
+		public float maxJumpHeight = 4f; // Desired max jump height
+
+		private bool isGrounded;
+		private Rigidbody rigidbody;
 		
 		/// <summary>
 		/// Last Time.time at which we shot.
@@ -80,6 +91,8 @@ namespace InfimaGames.LowPolyShooterPack
 		/// Actions Layer Index. Used to play actions like reloading.
 		/// </summary>
 		private int layerActions;
+
+		float jumpDuration;
 
 		/// <summary>
 		/// Character Kinematics. Handles all the IK stuff.
@@ -127,6 +140,8 @@ namespace InfimaGames.LowPolyShooterPack
 		/// Look Axis Values.
 		/// </summary>
 		private Vector2 axisMovement;
+
+		private bool isJumping;
 		
 		/// <summary>
 		/// True if the player is holding the aiming button.
@@ -198,6 +213,8 @@ namespace InfimaGames.LowPolyShooterPack
 			//Cache a reference to the overlay layer's index.
 			layerOverlay = characterAnimator.GetLayerIndex("Layer Overlay");
 
+			rigidbody = GetComponent<Rigidbody>();
+
 			StartCoroutine(BeatMatch__TestingRepeating());
 		}
 
@@ -210,34 +227,42 @@ namespace InfimaGames.LowPolyShooterPack
 	bool beatMatchIsRunning;
 
 
+
     IEnumerator BeatMatch__TestingRepeating()
     {
+		yield return new WaitForSeconds(0.1f);
+
         beatMatchIsRunning = true;
+		beatChevronsAnim = GameObject.Find("Beat Chevrons").GetComponent<Animator>();
+
+		AnimatorStateInfo stateInfo = beatChevronsAnim.GetCurrentAnimatorStateInfo(0);
+
+		beatLength = stateInfo.length;
 
         if (beatLength == 0)
         {
-            yield return new WaitForSeconds(0.5f); // Small delay to ensure Animator is initialized
+            // yield return new WaitForSeconds(0.5f); // Small delay to ensure Animator is initialized
 
-            // Wait until the Animator starts playing a state
-            while (!beatChevronsAnim.isInitialized)
-            {
-                Debug.Log("Waiting for Animator to initialize...");
-                yield return null;
-            }
+            // // Wait until the Animator starts playing a state
+            // while (!beatChevronsAnim.isInitialized)
+            // {
+            //     Debug.Log("Waiting for Animator to initialize...");
+            //     yield return null;
+            // }
 
             // Fetch the current state information
-            AnimatorStateInfo stateInfo = beatChevronsAnim.GetCurrentAnimatorStateInfo(0);
+				// AnimatorStateInfo stateInfo = beatChevronsAnim.GetCurrentAnimatorStateInfo(0);
             // Debug.Log($"Current State: {stateInfo.fullPathHash}, Expected State Hash: {Animator.StringToHash("Base Layer.Chevrons Come In")}");
 
             // Wait until the Animator is playing the expected state
-            while (!stateInfo.IsName("Base Layer.Chevrons Come In"))
-            {
-                // Debug.Log("Waiting for Animator to play 'Base Layer.Chevrons Come In' state...");
-                yield return null; // Wait for the next frame
-                stateInfo = beatChevronsAnim.GetCurrentAnimatorStateInfo(0);
-            }
+            // while (!stateInfo.IsName("Base Layer.Chevrons Come In"))
+            // {
+            //     // Debug.Log("Waiting for Animator to play 'Base Layer.Chevrons Come In' state...");
+            //     yield return null; // Wait for the next frame
+            //     	// stateInfo = beatChevronsAnim.GetCurrentAnimatorStateInfo(0);
+            // }
 
-            beatLength = stateInfo.length;
+            // beatLength = stateInfo.length;
         }
 
         // Start timer and process beat match
@@ -280,6 +305,10 @@ namespace InfimaGames.LowPolyShooterPack
 		{
 			aiming = holdingButtonAim && CanAim();
 			running = holdingButtonRun && CanRun();
+			// jumping = !CanPlayJumping();
+
+			Debug.Log("Update(). jumping = " + jumping);
+
 
 			//Holding the firing button.
 			if (holdingButtonFire)
@@ -290,16 +319,48 @@ namespace InfimaGames.LowPolyShooterPack
 					//Has fire rate passed.
 					if (Time.time - lastShotTime > 60.0f / equippedWeapon.GetRateOfFire())
 						Fire();
-				}	
+				}
 			}
+
+			// if (jumping)
+			// {
+			// 	rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+			// }
 
 			// else if (Keyboard.current.oKey.wasPressedThisFrame)			
 				// OnTryPlayReloadForced(beatMatchReloadMultiplier);
 				// PlayReloadAnimation();
-			
 
 			//Update Animator.
 			UpdateAnimator();
+		}
+
+		void FixedUpdate() 
+		{
+			ApplyCustomGravity();
+		}
+
+		void ApplyCustomGravity()
+		{
+            if (!isGrounded && isJumping)
+				rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpForce, rigidbody.velocity.z);
+
+			if (rigidbody.velocity.y > 0)
+				rigidbody.velocity += Vector3.up * Physics.gravity.y * (jumpDamping - 1) * Time.deltaTime;
+			else if (rigidbody.velocity.y < 0)
+				rigidbody.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+			else 
+				rigidbody.velocity += Vector3.up * Physics.gravity.y * (gravityMultiplier - 1) * Time.deltaTime;
+
+
+            // {
+            //     Vector3 gravity = Vector3.down * gravityMultiplier;
+
+            //     if (rigidbody.velocity.y < 0)
+            //         gravity *= fallMultiplier;
+
+            //     rigidbody.AddForce(gravity, ForceMode.Acceleration);
+            // }
 		}
 
 		protected override void LateUpdate()
@@ -313,7 +374,7 @@ namespace InfimaGames.LowPolyShooterPack
 				return;
 			
 			//Make sure that we have a kinematics component!
-			if(characterKinematics != null)
+			if (characterKinematics != null)
 			{
 				//Compute.
 				characterKinematics.Compute();
@@ -330,6 +391,7 @@ namespace InfimaGames.LowPolyShooterPack
 		
 		public override bool IsCrosshairVisible() => !aiming && !holstered;
 		public override bool IsRunning() => running;
+		public override bool IsJumping() => jumping;
 		
 		public override bool IsAiming() => aiming;
 		public override bool IsCursorLocked() => cursorLocked;
@@ -361,6 +423,10 @@ namespace InfimaGames.LowPolyShooterPack
 			//Update Animator Running.
 			const string boolNameRun = "Running";
 			characterAnimator.SetBool(boolNameRun, running);
+
+			const string boolNameJump = "Jumping";
+			// characterAnimator.SetBool(boolNameJump, jumping);
+			characterAnimator.SetBool(boolNameJump, jumping);
 		}
 		
 		/// <summary>
@@ -373,6 +439,11 @@ namespace InfimaGames.LowPolyShooterPack
 			//Play.
 			characterAnimator.CrossFade("Inspect", 0.0f, layerActions, 0);
 		}
+
+		// private void Jump()
+		// {
+		// 	Debug.Log("Jump() set jumping to false");			
+		// }
 		
 		/// <summary>
 		/// Fires the character's weapon.
@@ -453,6 +524,16 @@ namespace InfimaGames.LowPolyShooterPack
 			equippedWeaponScope = weaponAttachmentManager.GetEquippedScope();
 			//Get equipped magazine. We need this one for its settings!
 			equippedWeaponMagazine = weaponAttachmentManager.GetEquippedMagazine();
+		}
+
+		void OnCollisionEnter(Collision collision)
+		{
+			if (collision.gameObject.CompareTag("Ground"))
+			{
+				jumping = false;
+				isGrounded = true;
+				Debug.Log("touching ground");
+			}
 		}
 
 		private void FireEmpty()
@@ -548,6 +629,20 @@ namespace InfimaGames.LowPolyShooterPack
 			return true;
 		}
 
+		private bool CanPlayJumping()
+		{
+			if (aiming || reloading)
+				return false;
+			if (inspecting)
+				return false;
+			if (holdingButtonFire && equippedWeapon.HasAmmunition())
+				return false;
+			if (jumping || !isGrounded)
+				return false;
+
+			return true;
+		}
+
 		/// <summary>
 		/// Returns true if the Character can change their Weapon.
 		/// </summary>
@@ -635,6 +730,8 @@ namespace InfimaGames.LowPolyShooterPack
 			return true;
 		}
 
+
+
 		#endregion
 
 		#region INPUT
@@ -708,6 +805,56 @@ namespace InfimaGames.LowPolyShooterPack
 					break;
 			}
 		}
+
+		IEnumerator Jump()
+		{
+			isGrounded = false;
+			jumping = true;
+            	// rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z); // Reset vertical velocity before jump
+            	// rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);			
+			// jumpDuration = characterAnimator.GetCurrentAnimatorStateInfo(0).length * 10f;
+			// Debug.Log("jump duration = " + jumpDuration);
+			
+			// rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Acceleration);
+			// yield return new WaitForSeconds(jumpDuration);
+			// jumping = false;
+			yield break;
+		}
+
+		public void OnTryJump(InputAction.CallbackContext context)
+		{
+			if (!CanPlayJumping())
+				return;
+
+			//Switch.
+			switch (context)
+			{
+				case {phase: InputActionPhase.Performed}:
+				{
+					// isJumping = true;
+					// if (CanPlayJumping())
+					// {
+					Debug.Log("Jump input accepted");
+					// jumpDuration = characterAnimator.GetCurrentAnimatorStateInfo(0).length;
+					// Debug.Log("jump duration = " + jumpDuration);
+					// jumping = true;
+
+					// StartCoroutine(Jump());
+
+					break;
+					// }
+				}
+
+				// case {phase: InputActionPhase.Canceled}:
+				// 	jumping = false;
+				// 	Debug.Log("Input has now cancelled, jumping is false");
+				// 	break;
+					
+				// 	Jump();
+				// 	break;
+									
+			}
+		}		
 
 		public void OnTryPlayReloadForced(float beatMatchReloadMultiplier = 1f)
 		{

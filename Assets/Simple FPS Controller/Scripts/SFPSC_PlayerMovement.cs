@@ -99,6 +99,7 @@ public class SFPSC_PlayerMovement : MonoBehaviour
             // Jump
             if (Input.GetButton("Jump") && !jumpBlocked)
             {
+                Debug.Log("SFPSC jumped");
                 rb.AddForce(-jumpForce * rb.mass * Vector3.down);
                 jumpBlocked = true;
                 Invoke("UnblockJump", jumpCooldown);

@@ -11,24 +11,10 @@ namespace InfimaGames.LowPolyShooterPack
     {
         #region UNITY
 
-        /// <summary>
-        /// Awake.
-        /// </summary>
         protected virtual void Awake(){}
-
-        /// <summary>
-        /// Start.
-        /// </summary>
         protected virtual void Start(){}
-
-        /// <summary>
-        /// Update.
-        /// </summary>
         protected virtual void Update(){}
-
-        /// <summary>
-        /// Late Update.
-        /// </summary>
+        protected virtual void FixedUpdate(){}
         protected virtual void LateUpdate(){}
 
         #endregion
@@ -58,6 +44,8 @@ namespace InfimaGames.LowPolyShooterPack
         /// Returns true if the character is aiming.
         /// </summary>
         public abstract bool IsAiming();
+
+        public abstract bool IsJumping();
         /// <summary>
         /// Returns true if the game cursor is locked.
         /// </summary>
