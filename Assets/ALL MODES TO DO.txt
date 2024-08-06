@@ -3,6 +3,7 @@
 
 DOOM
     - What weapons to use?
+    - Multiple song tracks
     - UI
     - and Chainsaw
     - And Grappling Hook
@@ -11,12 +12,15 @@ HELLSINGER
     - What weapons to use?
     - UI
     - Clean up chevrons
+    - Multiple song tracks
+    - Only play parts of song when score is lower (also account for mode switching)
     - Match chevrons to beat
     - Match chevron glowing effect accordingly
-    - Beat matching gives bonuses
+    - Beat matching gives damage and effect bonuses
 
 DUSK
     - What weapons to use?
+    - Multiple background theme tracks
     - UI
 
 ALL
@@ -24,7 +28,7 @@ ALL
 
 
 ENEMIES
-    - Swap models out
+    - Swap models out between modes
 
 
 Handle transitions between modes
